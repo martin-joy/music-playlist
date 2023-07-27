@@ -58,7 +58,7 @@ export const loginUser = (email,password) => {
       const userId =response.data.existingUser.id;
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);
-      dispatch(loginUserSuccess(response.data.user));
+      dispatch(loginUserSuccess(response.data.existingUser));
       warning("login successful","success")
     } catch (error) {
       dispatch(loginUserFailure(error.message));
@@ -71,7 +71,7 @@ export const signUpUser = (name, email, password) => {
     dispatch(signUpUserRequest());
     try {
       const response = await addUserSignup(name,email,password)
-      dispatch(signUpUserSuccess(response.data.user));
+      dispatch(signUpUserSuccess(response.data.existingUser));
       warning("signUp successful","success")
     } catch (error) {
       dispatch(signUpUserFailure(error.message));

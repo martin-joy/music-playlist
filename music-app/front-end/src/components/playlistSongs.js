@@ -5,8 +5,6 @@ import { emptyPlaylist, fetchPlaylistSongs, createSongLike, removeSongFromPlayli
 import { Grid, Card, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { warning } from '../utils/shared.service';
-import '../css/playSongListStyles.css'; 
-
 const PlaySongList = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -37,8 +35,8 @@ const PlaySongList = () => {
   };
 
   return (
-    <div className="container">
-      <div className="playlistHeader">
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h2>Selected Playlist Songs:</h2>
         <Button
           component={Link}
@@ -46,7 +44,7 @@ const PlaySongList = () => {
           onClick={handleChange}
           variant="contained"
           color="primary"
-          className="backButton"
+          style={{ height: "40px", marginTop: "16px" }}
         >
           Back
         </Button>
@@ -55,16 +53,16 @@ const PlaySongList = () => {
         {songs.length > 0 ? (
           songs.map((song) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={song.id}>
-              <Card className="songCard">
-                <CardMedia component="img" height="200" image={song.image} alt="Song Cover" className="songImage" />
+              <Card sx={{ maxWidth: 345 }}>
+                <CardMedia component="img" height="200" image={song.image} alt="Song Cover" />
                 <CardContent>
-                  <Typography gutterBottom variant="h6" component="div" className="songTitle">
+                  <Typography gutterBottom variant="h6" component="div">
                     {song.title}
                   </Typography>
-                  <Typography variant="subtitle2" color="text.secondary" className="songArtist">
+                  <Typography variant="subtitle2" color="text.secondary">
                     {song.artistName}
                   </Typography>
-                  <audio controls src={song.preview} className="audioControl"></audio>
+                  <audio controls src={song.preview}></audio>
                 </CardContent>
                 <CardActions>
                   <Button size="small" onClick={() => handleRemoveFromPlaylist(id, song.id)}>

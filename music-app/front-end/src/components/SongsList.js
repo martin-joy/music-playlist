@@ -12,20 +12,33 @@ import {
   CardActions,
   IconButton,
 } from "@mui/material";
+import { Spin } from "antd";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import PlaylistModal from "../modal/playlist.modal";
 import { Link, useNavigate } from "react-router-dom";
 import { warning } from "../utils/shared.service";
-import "../css/songsListStyles.css";
+
 const SongsList = () => {
   const songs = useSelector((state) => state.songs);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchSongs());
-    dispatch(fetchPlaylists());
-  }, [dispatch]);
+  const [isLoading, setIsLoading] = useState(true);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await dispatch(fetchSongs());
+        await dispatch(fetchPlaylists());
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,7 +71,7 @@ const SongsList = () => {
       dispatch(emptyPlaylist());
     } else {
       navigate("/playlist");
-      dispatch(emptyPlaylist()); 
+      dispatch(emptyPlaylist());
     }
   };
 
@@ -78,124 +91,119 @@ const SongsList = () => {
 
   return (
     <div className="container">
-      <div className="modalContainer">
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <Button
           onClick={logout}
           variant="contained"
           color="primary"
-          className="logoutButton"
+          style={{ marginBottom: "20px", marginTop: "20px" }}
         >
-          Logout
+          logout
+        </Button>{" "}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>Songs List</h1>
+        <Button
+          component={Link}
+          to={`/`}
+          variant="contained"
+          color="primary"
+          style={{ height: "40px", marginTop: "16px" }}
+        >
+          Back
         </Button>
       </div>
-      <div className="container">
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h1>Songs List</h1>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
           <Button
-            component={Link}
-            to={`/`}
+            onClick={() => handleMyPlaylistClick("liked-songs")}
             variant="contained"
             color="primary"
-            className="backButton"
+            style={{ marginBottom: "80px", marginTop: "20px", marginRight: "20px" }}
           >
-            Back
+            Favorite Songs
+          </Button>
+          <Button
+            onClick={() => handleMyPlaylistClick("my-playlist")}
+            variant="contained"
+            color="primary"
+            className="playlist-link"
+            style={{ marginBottom: "80px", marginTop: "20px" }}
+          >
+            My Playlist
           </Button>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            <Button
-              onClick={() => handleMyPlaylistClick("liked-songs")}
-              variant="contained"
-              color="primary"
-              className="playlistButton"
-            >
-              Favorite Songs
-            </Button>
-            <Button
-              onClick={() => handleMyPlaylistClick("my-playlist")}
-              variant="contained"
-              color="primary"
-              className="playlistButton playlist-link"
-            >
-              My Playlist
-            </Button>
-          </div>
-          <div className="searchContainer">
-            <input
-              type="text"
-              placeholder="Search songs by title..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="searchInput"
-            />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "end",
+            marginBottom: "80px",
+            marginTop: "20px",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search songs by title..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            style={{ height: "20px", fontSize: "16px", padding: "8px" }}
+          />
 
-            <select
-              value={sortOption}
-              onChange={handleSortChange}
-              className="sortSelect"
-            >
-              <option value="default">Default Order</option>
-              <option value="desc">Des (Z-A)</option>
-            </select>
+          <select
+            value={sortOption}
+            onChange={handleSortChange}
+            style={{
+              height: "40px",
+              fontSize: "16px",
+              marginLeft: "8px",
+              marginRight: "8px",
+            }}
+          >
+            <option value="default">Default Order</option>
+            <option value="desc">Des (Z-A)</option>
+          </select>
 
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSearchSubmit}
-              className="searchButton"
-            >
-              Search
-            </Button>
-          </div>
+          <Button variant="contained" color="primary" onClick={handleSearchSubmit}>
+            Search
+          </Button>
         </div>
       </div>
 
-      <Grid container spacing={2}>
-        {songs.map((song) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={song.id}>
-            <Card className="card">
-              <CardMedia
-                component="img"
-                height="200"
-                image={song.image}
-                alt="Song Cover"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {song.title}
-                </Typography>
-                <Typography variant="subtitle2" color="text.secondary">
-                  {song.artistName}
-                </Typography>
-                <audio controls src={song.preview}></audio>
-              </CardContent>
-              <CardActions>
-                <Button
-                  size="small"
-                  onClick={() => handleAddToPlaylist(song)}
-                >
-                  Add to Playlist
-                </Button>
-                <IconButton
-                  size="small"
-                  onClick={() => handleLikeClick(song.id)}
-                >
-                  {song.isLike ? (
-                    <Favorite style={{ fill: "red" }} />
-                  ) : (
-                    <FavoriteBorder />
-                  )}
-                </IconButton>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {isLoading ? (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100px" }}>
+           <Spin tip="Loading" size="large"/> 
+        </div>
+      ) : (
+        <Grid container spacing={2}>
+          {songs.map((song) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={song.id}>
+              <Card sx={{ maxWidth: 345 }}>
+                <CardMedia component="img" height="200" image={song.image} alt="Song Cover" />
+                <CardContent>
+                  <Typography gutterBottom variant="h6" component="div">
+                    {song.title}
+                  </Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {song.artistName}
+                  </Typography>
+                  <audio controls src={song.preview}></audio>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" onClick={() => handleAddToPlaylist(song)}>
+                    Add to Playlist
+                  </Button>
+                  <IconButton size="small" onClick={() => handleLikeClick(song.id)}>
+                    {song.isLike ? <Favorite style={{ fill: "red" }} /> : <FavoriteBorder />}
+                  </IconButton>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
       {showModal && (
-        <PlaylistModal
-          selectedSong={selectedSong}
-          onClose={() => setShowModal(false)}
-        />
+        <PlaylistModal selectedSong={selectedSong} onClose={() => setShowModal(false)} />
       )}
     </div>
   );

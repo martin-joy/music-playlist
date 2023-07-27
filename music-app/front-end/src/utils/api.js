@@ -16,5 +16,12 @@ instance.interceptors.request.use((config) => {
   Promise.reject(error);
 });
 
-
+instance.interceptors.response.use(
+  response => {
+    return response;
+  }, async (error) => {
+    if (error.response.status === 403) {
+      window.location.href = '/';
+    }})
+    
 export default instance;
