@@ -75,7 +75,6 @@ export const removePlaylistSongsFailure = (error) => ({
 export const fetchSongs = (searchQuery, sortOption) => {
   return async (dispatch) => {
     try {
-      const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
       const songsData = await getSongsApi(searchQuery,sortOption,userId);
       const songsList = songsData.map((song) => {

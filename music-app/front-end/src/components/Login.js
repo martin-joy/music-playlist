@@ -6,17 +6,11 @@ import { TextField, Button, Container, Paper, Typography } from '@mui/material';
 import { LockOutlined, EmailOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { warning } from '../utils/shared.service';
+import '../css/loginStyles.css'; 
 
-const StyledForm = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  marginTop: '2rem',
-});
+const StyledForm = styled('form')({});
 
-const StyledPaper = styled(Paper)({
-  padding: '2rem',
-});
+const StyledPaper = styled(Paper)({});
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -27,7 +21,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser(email, password));
-    warning("loged succesful","success")
+    warning('Logged in successfully', 'success');
   };
 
   useEffect(() => {
@@ -38,11 +32,11 @@ const Login = () => {
 
   return (
     <Container maxWidth="xs">
-      <StyledPaper elevation={3}>
+      <StyledPaper elevation={3} className="paperContainer">
         <Typography variant="h5" component="h1" align="center" gutterBottom>
           Login
         </Typography>
-        <StyledForm onSubmit={handleSubmit}>
+        <StyledForm onSubmit={handleSubmit} className="form">
           <TextField
             label="Email"
             variant="outlined"
@@ -69,13 +63,13 @@ const Login = () => {
               startAdornment: <LockOutlined fontSize="small" />,
             }}
           />
-          <div style={{ display: 'flex' }}>
-            <Button type="submit" variant="contained" color="primary">
+          <div className="formContainer">
+            <Button type="submit" variant="contained" color="primary" className="submitButton">
               Login
             </Button>
             <div style={{ width: '6rem' }} />
             <Link to="/signup">
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" className="signUpButton">
                 Sign Up
               </Button>
             </Link>

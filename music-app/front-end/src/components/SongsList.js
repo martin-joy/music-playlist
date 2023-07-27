@@ -16,7 +16,7 @@ import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import PlaylistModal from "../modal/playlist.modal";
 import { Link, useNavigate } from "react-router-dom";
 import { warning } from "../utils/shared.service";
-
+import "../css/songsListStyles.css";
 const SongsList = () => {
   const songs = useSelector((state) => state.songs);
   const dispatch = useDispatch();
@@ -24,11 +24,10 @@ const SongsList = () => {
   useEffect(() => {
     dispatch(fetchSongs());
     dispatch(fetchPlaylists());
-  }, []);
+  }, [dispatch]);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
-  const [showLoginWarning, setShowLoginWarning] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("default");
 
@@ -79,90 +78,82 @@ const SongsList = () => {
 
   return (
     <div className="container">
-      <div style={{display:"flex",justifyContent: "flex-end"}}>
-       <Button
+      <div className="modalContainer">
+        <Button
           onClick={logout}
           variant="contained"
           color="primary"
-          style={{ marginBottom: "20px" , marginTop: "20px"}}
-        >logout</Button> </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Songs List</h1>
-        <Button
-          component={Link}
-          to={`/`}
-          variant="contained"
-          color="primary"
-          style={{ height: "40px", marginTop: "16px" }}
+          className="logoutButton"
         >
-          Back
+          Logout
         </Button>
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
+      <div className="container">
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h1>Songs List</h1>
           <Button
-            onClick={() => handleMyPlaylistClick("liked-songs")}
+            component={Link}
+            to={`/`}
             variant="contained"
             color="primary"
-            style={{ marginBottom: "80px" , marginTop: "20px",marginRight:"20px"}}
+            className="backButton"
           >
-            Favorite Songs
-          </Button>
-          <Button
-            onClick={() => handleMyPlaylistClick("my-playlist")}
-            variant="contained"
-            color="primary"
-            className="playlist-link"
-            style={{ marginBottom: "80px" , marginTop: "20px",}}
-          >
-            My Playlist
+            Back
           </Button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-            marginBottom: "80px",
-            marginTop: "20px",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Search songs by title..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            style={{ height: "20px", fontSize: "16px", padding: "8px" }}
-          />
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>
+            <Button
+              onClick={() => handleMyPlaylistClick("liked-songs")}
+              variant="contained"
+              color="primary"
+              className="playlistButton"
+            >
+              Favorite Songs
+            </Button>
+            <Button
+              onClick={() => handleMyPlaylistClick("my-playlist")}
+              variant="contained"
+              color="primary"
+              className="playlistButton playlist-link"
+            >
+              My Playlist
+            </Button>
+          </div>
+          <div className="searchContainer">
+            <input
+              type="text"
+              placeholder="Search songs by title..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="searchInput"
+            />
 
-          <select
-            value={sortOption}
-            onChange={handleSortChange}
-            style={{
-              height: "40px",
-              fontSize: "16px",
-              marginLeft: "8px",
-              marginRight: "8px",
-            }}
-          >
-            <option value="default">Default Order</option>
-            <option value="desc">Des (Z-A)</option>
-          </select>
+            <select
+              value={sortOption}
+              onChange={handleSortChange}
+              className="sortSelect"
+            >
+              <option value="default">Default Order</option>
+              <option value="desc">Des (Z-A)</option>
+            </select>
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearchSubmit}
-          >
-            Search
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSearchSubmit}
+              className="searchButton"
+            >
+              Search
+            </Button>
+          </div>
         </div>
       </div>
 
       <Grid container spacing={2}>
         {songs.map((song) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={song.id}>
-            <Card sx={{ maxWidth: 345 }}>
+            <Card className="card">
               <CardMedia
                 component="img"
                 height="200"
@@ -179,11 +170,21 @@ const SongsList = () => {
                 <audio controls src={song.preview}></audio>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => handleAddToPlaylist(song)}>
+                <Button
+                  size="small"
+                  onClick={() => handleAddToPlaylist(song)}
+                >
                   Add to Playlist
                 </Button>
-                <IconButton size="small" onClick={() => handleLikeClick(song.id)}>
-                  {song.isLike ? <Favorite style={{ fill: "red" }} /> : <FavoriteBorder />}
+                <IconButton
+                  size="small"
+                  onClick={() => handleLikeClick(song.id)}
+                >
+                  {song.isLike ? (
+                    <Favorite style={{ fill: "red" }} />
+                  ) : (
+                    <FavoriteBorder />
+                  )}
                 </IconButton>
               </CardActions>
             </Card>

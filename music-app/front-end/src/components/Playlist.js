@@ -12,7 +12,7 @@ import {
   Grid,
 } from "@mui/material";
 import { warning } from "../utils/shared.service";
-
+import "../css/playlistStyles.css";
 const Playlist = () => {
   const dispatch = useDispatch();
   const playlists = useSelector((state) => state.playlist.playlists);
@@ -74,52 +74,40 @@ const Playlist = () => {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className="container">
         <h1>Playlist</h1>
         <Button
           component={Link}
           to="/songs"
           variant="contained"
           color="primary"
-          style={{ height: "40px", marginTop: "16px" }}
+          className="backButton"
         >
           Back
         </Button>
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className="container">
         <Button
           onClick={openModal}
-          style={{ marginBottom: "20px" }}
+          className="createButton"
           variant="contained"
           color="primary"
         >
           Create Playlist
         </Button>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-            marginBottom: "20px",
-          }}
-        >
+        <div className="searchContainer">
           <div>
             <input
               type="text"
               placeholder="Search playlists by name..."
               value={searchQuery}
               onChange={handleSearchChange}
-              style={{ height: "20px", fontSize: "16px", padding: "8px" }}
+              className="searchInput"
             />
             <select
               value={sortOption}
               onChange={handleSortChange}
-              style={{
-                height: "40px",
-                fontSize: "16px",
-                marginLeft: "8px",
-                marginRight: "8px",
-              }}
+              className="sortSelect"
             >
               <option value="default">Default Order</option>
               <option value="desc">Descending (Z-A)</option>
@@ -129,6 +117,7 @@ const Playlist = () => {
             variant="contained"
             color="primary"
             onClick={handleSearchSubmit}
+            className="searchButton"
           >
             Search
           </Button>
@@ -138,19 +127,11 @@ const Playlist = () => {
       <Grid container spacing={2}>
         {playlists.map((playlist) => (
           <Grid item key={playlist.id} xs={12} sm={6} md={4} lg={3}>
-            <Card
-              sx={{
-                minWidth: 275,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
+            <Card className="card">
               <CardContent>
                 <Link
                   to={`/playlist/${playlist.id}`}
-                  style={{ textDecoration: "none" }}
+                  className="cardLink"
                 >
                   <Typography variant="h6" component="div">
                     {playlist.playlistName}

@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 exports.createUser = async (req, res) => {
   console.log("User create hit");
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.query;
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {

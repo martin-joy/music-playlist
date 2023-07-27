@@ -11,8 +11,13 @@ export const getSongsApi = async (searchQuery='', sortOption='', userId) => {
   };
   
 export const getPlaylistSong = async (playlistId,userId) => {
-  const response = await instance.get(`/playlist?playlistId=${playlistId}&userId=${userId}`);
-  return response.data.songsInPlaylist;
+  try {
+    const response = await instance.get(`/playlist?playlistId=${playlistId}&userId=${userId}`);
+    return response.data.songsInPlaylist;
+  } catch (error) {
+    throw error
+  }
+ 
 };
 
 export const deleteSongPlaylist = async (playlistId,songId) => {
