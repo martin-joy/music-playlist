@@ -54,7 +54,7 @@ The backend API is built using Node.js, Express.js, and Sequelize as the ORM for
 1. Clone the repository:
 
 ```bash
-git clone [https://github.com/martin-joy/music-playlist.git]
+git clone [https://github.com/martin-joy/musicApplication.git]
 cd music-app-backend
 ```
 
