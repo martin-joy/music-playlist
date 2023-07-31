@@ -53,14 +53,14 @@ export const loginUser = (email,password) => {
   return async (dispatch) => {
     dispatch(loginUserRequest());
     try {
-      const response =await addUserLogin(email,password)
+      const response =await addUserLogin(email,password)  
       const token = response.data.token;
       const userId =response.data.existingUser.id;
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);
       dispatch(loginUserSuccess(response.data.existingUser));
-      warning("login successful","success")
     } catch (error) {
+      warning("login unsuccessful","error")
       dispatch(loginUserFailure(error.message));
     }
   };

@@ -24,10 +24,13 @@ const App = () => {
           path="/login"
           element={result ? <Navigate to="/songs" /> : <Login />}
         />
+         
+         <Route path="/songs" element={<SongsList />} />
          <Route path="/" element={<Dashboard />} />
         <Route path="/signup" element={<SignUp />} />
+        
         <Route element={<ProtectedRoute result={result} />}>
-        <Route path="/songs" element={<SongsList />} />
+        
           <Route path="/playlist" element={<Playlist />} />
           <Route path="/playlist/:id" element={<PlaySongList />} />
           <Route path="/likedSongs" element={<LikedSongs/>} />
