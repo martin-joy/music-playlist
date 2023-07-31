@@ -10,7 +10,7 @@ const {validateToken}=require("../middleware/auth.middleware")
 //const { validateToken } = require("../middleware/auth.middleware");
 
 router.post("/playlist",validateToken,createPlaylists);
-router.get("/playlist",validateToken,getPlaylists);
+router.get("/playlist",getPlaylists);
 router.put("/playlist",validateToken,updatePlaylist)
 
 module.exports = router;

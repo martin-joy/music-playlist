@@ -34,7 +34,7 @@ exports.validationUser = async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       if (existingUser.password === password) {
-        const token = jwt.sign({ id: existingUser.id, name: existingUser.name }, "joy", { expiresIn: "1h" });
+        const token = jwt.sign({ id: existingUser.id, name: existingUser.name }, "joy", { expiresIn: "2h" });
         return res.send({ message: "User validation successful!", token,existingUser});
       } else {
         return res.status(500).send({ message: "Invalid password." });

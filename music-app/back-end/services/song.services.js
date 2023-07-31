@@ -30,8 +30,8 @@ exports.getSongs = async (req, res) => {
     if (sortOption === "desc") {
       order = [["title", "DESC"]];
     }
-
     if (searchQuery && searchQuery.length >= 3) {
+      if(userId){
       allSongs = await Songs.findAll({
         where: {
           title: {
@@ -48,7 +48,18 @@ exports.getSongs = async (req, res) => {
         ],
         order,
       });
-    } else {
+      return res.json(allSongs);
+    }else{
+      allSongs = await Songs.findAll({
+        where: {
+          title: {
+            [Op.like]: `%${searchQuery}%`,
+          },
+        },order,
+    })
+    }} else {
+      if(userId)
+      {
       allSongs = await Songs.findAll({
         include: [
           {
@@ -60,9 +71,12 @@ exports.getSongs = async (req, res) => {
         ],
         order,
       });
+     return res.json(allSongs);
     }
-    res.json(allSongs);
-  } catch (error) {
+    allSongs= await Songs.findAll({order})
+    return res.json (allSongs);
+   
+ } } catch (error) {
     console.error("Error while fetching songs:", error);
     res.status(500).json({ error: "Unable to fetch songs" });
   }

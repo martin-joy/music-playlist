@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { emptyPlaylist, fetchSongs, createSongLike } from "../actions/songActions";
+import {
+  emptyPlaylist,
+  fetchSongs,
+  createSongLike,
+} from "../actions/songActions";
 import { fetchPlaylists } from "../actions/playlistActions";
 import {
   Button,
@@ -16,14 +20,13 @@ import { Spin } from "antd";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import PlaylistModal from "../modal/playlist.modal";
 import { Link, useNavigate } from "react-router-dom";
-import { warning } from "../utils/shared.service";
+import WarningModal from "../utils/shared.service";
 
 const SongsList = () => {
   const songs = useSelector((state) => state.songs);
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,29 +42,21 @@ const SongsList = () => {
 
     fetchData();
   }, []);
+
   const [showModal, setShowModal] = useState(false);
+  const [showPlaylistModal, setPlaylistShowModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("default");
-
   const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem("token");
 
   const handleAddToPlaylist = (song) => {
-    setSelectedSong(song);
-    setShowModal(true);
-  };
-
-  const logout = () => {
-    localStorage.clear();
-    window.location.reload(true);
-  };
-
-  const handleLikeClick = async (songId) => {
-    try {
-      await dispatch(createSongLike(songId));
-      dispatch(fetchSongs());
-    } catch (error) {
-      warning("Error updating song like or fetching playlist songs:", "error");
+    if (isLoggedIn) {
+      setSelectedSong(song);
+      setPlaylistShowModal(true);
+    } else {
+      setShowModal(true);
     }
   };
 
@@ -72,6 +67,28 @@ const SongsList = () => {
     } else {
       navigate("/playlist");
       dispatch(emptyPlaylist());
+    }
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+    window.location.reload(true);
+  };
+
+  const handleLikeClick = async (songId) => {
+    try {
+      if (isLoggedIn) {
+        await dispatch(createSongLike(songId));
+        dispatch(fetchSongs());
+      } else {
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.log(
+        "Error updating song like or fetching playlist songs:",
+        error
+      );
     }
   };
 
@@ -92,14 +109,16 @@ const SongsList = () => {
   return (
     <div className="container">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button
-          onClick={logout}
-          variant="contained"
-          color="primary"
-          style={{ marginBottom: "20px", marginTop: "20px" }}
-        >
-          logout
-        </Button>{" "}
+        {isLoggedIn && (
+          <Button
+            onClick={logout}
+            variant="contained"
+            color="primary"
+            style={{ marginBottom: "20px", marginTop: "20px" }}
+          >
+            logout
+          </Button>
+        )}
       </div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h1>Songs List</h1>
@@ -115,23 +134,31 @@ const SongsList = () => {
       </div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
-          <Button
-            onClick={() => handleMyPlaylistClick("liked-songs")}
-            variant="contained"
-            color="primary"
-            style={{ marginBottom: "80px", marginTop: "20px", marginRight: "20px" }}
-          >
-            Favorite Songs
-          </Button>
-          <Button
-            onClick={() => handleMyPlaylistClick("my-playlist")}
-            variant="contained"
-            color="primary"
-            className="playlist-link"
-            style={{ marginBottom: "80px", marginTop: "20px" }}
-          >
-            My Playlist
-          </Button>
+          {isLoggedIn && (
+            <Button
+              onClick={() => handleMyPlaylistClick("liked-songs")}
+              variant="contained"
+              color="primary"
+              style={{
+                marginBottom: "80px",
+                marginTop: "20px",
+                marginRight: "20px",
+              }}
+            >
+              Favorite Songs
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button
+              onClick={() => handleMyPlaylistClick("my-playlist")}
+              variant="contained"
+              color="primary"
+              className="playlist-link"
+              style={{ marginBottom: "80px", marginTop: "20px" }}
+            >
+              My Playlist
+            </Button>
+          )}
         </div>
         <div
           style={{
@@ -164,22 +191,38 @@ const SongsList = () => {
             <option value="desc">Des (Z-A)</option>
           </select>
 
-          <Button variant="contained" color="primary" onClick={handleSearchSubmit}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSearchSubmit}
+          >
             Search
           </Button>
         </div>
       </div>
 
       {isLoading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100px" }}>
-           <Spin tip="Loading" size="large"/> 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100px",
+          }}
+        >
+          <Spin tip="Loading" size="large" />
         </div>
       ) : (
         <Grid container spacing={2}>
           {songs.map((song) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={song.id}>
               <Card sx={{ maxWidth: 345 }}>
-                <CardMedia component="img" height="200" image={song.image} alt="Song Cover" />
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={song.image}
+                  alt="Song Cover"
+                />
                 <CardContent>
                   <Typography gutterBottom variant="h6" component="div">
                     {song.title}
@@ -190,11 +233,21 @@ const SongsList = () => {
                   <audio controls src={song.preview}></audio>
                 </CardContent>
                 <CardActions>
-                  <Button size="small" onClick={() => handleAddToPlaylist(song)}>
+                  <Button
+                    size="small"
+                    onClick={() => handleAddToPlaylist(song)}
+                  >
                     Add to Playlist
                   </Button>
-                  <IconButton size="small" onClick={() => handleLikeClick(song.id)}>
-                    {song.isLike ? <Favorite style={{ fill: "red" }} /> : <FavoriteBorder />}
+                  <IconButton
+                    size="small"
+                    onClick={() => handleLikeClick(song.id)}
+                  >
+                    {song.isLike ? (
+                      <Favorite style={{ fill: "red" }} />
+                    ) : (
+                      <FavoriteBorder />
+                    )}
                   </IconButton>
                 </CardActions>
               </Card>
@@ -203,7 +256,13 @@ const SongsList = () => {
         </Grid>
       )}
       {showModal && (
-        <PlaylistModal selectedSong={selectedSong} onClose={() => setShowModal(false)} />
+        <WarningModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      )}
+      {showPlaylistModal && (
+        <PlaylistModal
+          selectedSong={selectedSong}
+          onClose={() => setPlaylistShowModal(false)}
+        />
       )}
     </div>
   );

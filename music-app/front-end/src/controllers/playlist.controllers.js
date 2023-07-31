@@ -16,7 +16,7 @@ export const createSongToPlaylist = async (songData) => {
   const response = await instance.post(`/songToplaylist?playlistId=${songData.playlistId}&songId=${songData.songId}`);
   return response;
     }catch(error){
-        throw error;
+      warning('Error in create Song To Playlist', "error");
     }
 };
 
@@ -25,6 +25,7 @@ export const addPlaylist = async (userId,playlistName) => {
   const response = await instance.post(`/playlist?userId=${userId}&playlistName=${playlistName}`);
   return response.data;
   }catch(error){
+    warning('Error in create Song To Playlist', "error");
     throw error;
   }
 };
@@ -35,6 +36,7 @@ export const removePlaylist = async (playlistId) => {
     return response.data;
   }
  catch(error){
+  warning('Error in remove in Playlist', "error");
   throw error;
  }
 };
@@ -44,6 +46,7 @@ export const updatePlaylist = async (playlistId,updatedPlaylistName) => {
     const response = await instance.put(`/playlist?updateId=${playlistId}&playlistName=${updatedPlaylistName}`);
   return response.data;
   } catch (error) {
+    warning('Error in update in Playlist', "error");
     throw error;
   }
   
